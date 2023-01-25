@@ -7,6 +7,10 @@ var logger = require('morgan');
 // var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
+// get MongoDB driver connection
+const dbo = require('./db/conn');
+const PORT = process.env.PORT || 5000;
+
 var app = express();
 
 // view engine setup
@@ -36,6 +40,20 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
+});
+
+// MongoDB
+// perform a database connection when the server starts
+dbo.connectToServer(function (err) {
+  if (err) {
+    console.error(err);
+    process.exit();
+  }
+
+  // start the Express server
+  app.listen(PORT, () => {
+    console.log(`Server is running on port: ${PORT}`);
+  });
 });
 
 module.exports = app;
